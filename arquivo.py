@@ -1,1 +1,2 @@
-print("eu sou foda")
+print("Dupla")
+#Eu Marcos, mudei o codigo.
