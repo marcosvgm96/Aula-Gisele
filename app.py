@@ -4,22 +4,17 @@ from pymongo import MongoClient
 from bson.objectid import ObjectId
 from flask_cors import CORS
 import yaml
-# Conecao
+
+#Flask
 app = Flask(__name__)
 config = yaml.load(open('database.yaml'))
 client = MongoClient(config['uri'])
 db = client['livraria']
 CORS(app)
 
-# get
-@app.route('/')
-def index():
-    return render_template('home.html')
-
-
 @app.route('/data', methods=['POST', 'GET'])
 def data():
-    # transformando o JSON em um dicionário
+    # POST
     if request.method == 'POST':
         body = request.json
         livro = body['livro']
@@ -37,7 +32,7 @@ def data():
             'autor': autor
         })
 
-    # GET para pegar dados
+    # GET
     if request.method == 'GET':
         allData = db['livros'].find()
         dataJson = []
@@ -54,10 +49,10 @@ def data():
         print(dataJson)
         return jsonify(dataJson)
 
-
+#GET por ID
 @app.route('/data/<string:id>', methods=['GET', 'DELETE', 'PUT'])
 def onedata(id):
-    # métodos por id
+
     if request.method == 'GET':
         data = db['livros'].find_one({'_id': ObjectId(id)})
         id = data['_id']
@@ -71,13 +66,13 @@ def onedata(id):
         print(dataDict)
         return jsonify(dataDict)
 
-    # DELETE do banco de dados
+    # DELETE
     if request.method == 'DELETE':
         db['livros'].delete_many({'_id': ObjectId(id)})
         print('\n # Deletion successful # \n')
         return jsonify({'status': 'Data id: ' + id + ' is deleted!'})
 
-    # UPDATE para atualizar os dados
+        # PUT
     if request.method == 'PUT':
         body = request.json
         livro = body['livro']
